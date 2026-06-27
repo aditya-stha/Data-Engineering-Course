@@ -1,4 +1,7 @@
--- Student Name: Aditya Shanker Shrestha
+-- WEEK2 SQL QUERIES : Aditya Shanker Shrestha
+
+-- QUESTION 1 ( normalized schema )
+
 -- Week 2: Normalizing the flat rides table into 3NF
 -- Entities: locations, drivers, passengers, payment_methods, trips
 -- Cleaning: initcap + trim + regexp_replace for consistent dedup
@@ -177,4 +180,93 @@ JOIN locations dl ON t.dropoff_location_id = dl.location_id
 LEFT  JOIN payment_methods pm ON t.payment_method_id = pm.payment_method_id
 LIMIT 10;
 
+--  QUESTION 2 (Completed Rides per Driver DESC)
 
+-- Initial query based on GROUP BY driver_name, Futher thought made me realize GROUP BY driver_id is a better option.
+
+SELECT d.driver_name, COUNT(t.*) AS completed_rides 
+FROM drivers d LEFT JOIN trips t 
+ON d.driver_id = t.driver_id AND t.status = 'completed'  
+GROUP BY d.driver_id, d.driver_name  
+ORDER BY completed_rides DESC; 
+
+
+-- Exploring another sql query that redeeems same results
+
+-- Subquery with outer RIGHT JOIN (works, but redundant double-join on drivers) ; trains my sub query skills
+SELECT d.driver_name, completed_rides 
+FROM  ( 
+	SELECT d.driver_id, COUNT(t.trip_id )
+	AS completed_rides 
+	FROM drivers d LEFT JOIN trips t 
+	ON d.driver_id = t.driver_id AND t.status = 'completed'  
+	GROUP BY d.driver_id 
+	ORDER BY completed_rides DESC ) sub 
+RIGHT JOIN drivers d ON d.driver_id = sub.driver_id ; 
+
+-- following query works due to Postgres' Functional Dependency feature (not portable for others)
+
+SELECT d.driver_name, COUNT(t.trip_id) AS completed_rides 
+    FROM drivers d 
+    LEFT JOIN trips t ON d.driver_id = t.driver_id AND t.status = 'completed'  
+    GROUP BY d.driver_id; 
+
+-- Data integrity verification (confirming both return 2862)
+-- Both queries return same value.
+
+SELECT COUNT(*) AS total_completed_rides FROM trips WHERE status = 'completed';
+
+SELECT SUM(sub.completed_rides) AS total_completed_rides FROM ( SELECT d.driver_name, COUNT(t.trip_id ) AS completed_rides FROM drivers d INNER JOIN trips t ON d.driver_id = t.driver_id WHERE t.status = 'completed'  GROUP BY d.driver_id ) sub;
+
+--  QUESTION 3 ( Driver with no rides )
+
+SELECT d.driver_name AS driver_with_no_completed_rides 
+FROM drivers d LEFT JOIN trips t ON d.driver_id = t.driver_id AND t.status ='completed'
+WHERE t.driver_id IS NULL;
+
+-- Alternative query
+
+SELECT d.driver_name AS driver_with_no_completed_rides 
+FROM drivers d
+WHERE NOT EXISTS (
+        SELECT 1 FROM trips t WHERE t.driver_id = d.driver_id AND t.status = 'completed');
+
+-- QUESTION 4 ( Avg fare per city desc )
+-- Note: The hint mentions a "3 table join", but logically only a 2-table join 
+SELECT l.city_name AS pickup_city, ROUND(AVG(t.fare_amount),2) AS avg_fare 
+FROM locations l  INNER JOIN trips t ON l.location_id = t.pickup_location_id
+WHERE t.status = 'completed'
+GROUP BY l.city_name 
+ORDER BY avg_fare DESC;
+
+-- Alternative for Integer only avg fare case
+
+SELECT l.city_name AS pickup_city, DIV(SUM(t.fare_amount),COUNT(t.trip_id)) AS avg_fare 
+FROM locations l  INNER JOIN trips t ON l.location_id = t.pickup_location_id
+GROUP BY l.city_name 
+ORDER BY avg_fare DESC;
+
+-- QUESTION 5 ( rides where pickup and dropoff city are the same )
+
+SELECT d.driver_name, p.passenger_name,
+       pl.city_name AS pickup, dl.city_name AS dropoff,
+       t.fare_amount, t.status, pm.payment_method_name
+FROM trips t
+INNER JOIN drivers d ON t.driver_id = d.driver_id
+INNER JOIN passengers p ON t.passenger_id = p.passenger_id
+INNER JOIN  locations pl ON t.pickup_location_id = pl.location_id
+INNER JOIN locations dl ON t.dropoff_location_id = dl.location_id
+LEFT  JOIN payment_methods pm ON t.payment_method_id = pm.payment_method_id
+WHERE t.dropoff_location_id = t.pickup_location_id ;
+
+-- QUESTION 6 ( total revenue )
+
+SELECT SUM(t.fare_amount)
+FROM trips t
+WHERE t.status = 'completed';
+
+-- verifying
+
+SELECT SUM(fare_amount)
+FROM rides
+WHERE ride_status = 'completed';

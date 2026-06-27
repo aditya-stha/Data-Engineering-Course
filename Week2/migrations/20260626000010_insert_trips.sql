@@ -25,12 +25,12 @@ SELECT
     pm.payment_method_id
 FROM rides r
 JOIN drivers d
-    ON d.name = INITCAP(TRIM(REGEXP_REPLACE(r.driver_name, '\s+', ' ', 'g')))
+    ON d.driver_name = INITCAP(TRIM(REGEXP_REPLACE(r.driver_name, '\s+', ' ', 'g')))
 JOIN passengers p
-    ON p.name = INITCAP(TRIM(REGEXP_REPLACE(r.passenger_name, '\s+', ' ', 'g')))
+    ON p.passenger_name = INITCAP(TRIM(REGEXP_REPLACE(r.passenger_name, '\s+', ' ', 'g')))
 JOIN locations pl
     ON pl.city_name = r.pickup_city
 JOIN locations dl
     ON dl.city_name = r.dropoff_city
 LEFT JOIN payment_methods pm
-    ON pm.name = r.payment_method;
+    ON pm.payment_method_name = r.payment_method;

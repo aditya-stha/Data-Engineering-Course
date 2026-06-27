@@ -157,7 +157,7 @@ def print_results(rows: list) -> None:
 
     # TODO: print a footer with the total number of drivers
     print("-" * 40)
-    print(f"Total drivers: {len(rows):>25}")
+    print(f"{'Total drivers:':<25}{len(rows):>15}")
 
 # ─────────────────────────────────────────────────────────────────────────────
 def main():
