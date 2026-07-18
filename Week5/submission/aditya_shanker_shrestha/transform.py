@@ -102,7 +102,12 @@ def transform(oltp_row, lookups):
             "surge_multiplier":     surge_multiplier,
             "requested_at":         row["requested_at"],
             "vehicle_key":          vehicle_key,
-            "time_key":             time_key
+            "time_key":             time_key,
+            # not inserted by load_fact_trips (trip_count has a DB default) —
+            # carried through for the quality checks only
+            "status":               row["status"],
+            "completed_at":         row["completed_at"],
+            "trip_count":           1
         })
 
     logger.info(f"Transformed {len(fact_rows)} rows, skipped {skipped}")

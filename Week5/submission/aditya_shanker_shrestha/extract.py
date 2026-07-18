@@ -2,6 +2,8 @@ import logging
 
 from psycopg2.extras import RealDictCursor
 
+logger = logging.getLogger(__name__)
+
 
 def extract(conn, sql, params=None):
     try:
@@ -189,7 +191,7 @@ def extract_trips_incremental(conn, watermark):
 
 def get_watermark(dst_conn):
     query = """
-    SELECT COALESCE(MAX(requested_at), '1900-01-01') AS watermark
+    SELECT COALESCE(MAX(requested_at), '2020-01-01') AS watermark
     FROM fact_trips;
     """
     with dst_conn.cursor() as curr:

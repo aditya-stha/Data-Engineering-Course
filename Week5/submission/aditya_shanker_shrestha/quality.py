@@ -25,7 +25,8 @@ def check_no_negative_fares(rows):
     }
 
 def check_required_keys_not_null(rows):
-    required_keys = ["source_trip_id", "date_key", "driver_key", "passenger_key", "pickup_location_key", "dropoff_location_key", "payment_method_key","tip_amount", "discount_amount", "trip_count","requested_at", "time_key"]
+    # payment_method_key / promo_code_key excluded — nullable by design (e.g. no_show trips)
+    required_keys = ["source_trip_id", "date_key", "driver_key", "passenger_key", "pickup_location_key", "dropoff_location_key", "tip_amount", "discount_amount", "trip_count","requested_at", "time_key"]
     invalid_rows = [r for r in rows if any(r[k] is None for k in required_keys)]
     passed = not invalid_rows
     return {
@@ -54,7 +55,7 @@ def check_surge_multiplier(rows):
         "details" : f"Found {len(invalid_rows)} rows with negative surge_multiplier values" if invalid_rows else "No rows with negative surge_multiplier values found"
     }
 def check_distance_km(rows):
-    invalid_rows = [r for r in rows if r["distance_km"] < 0]
+    invalid_rows = [r for r in rows if r["distance_km"] is not None and r["distance_km"] < 0]
     passed = not invalid_rows
     return {
         "check_identifier" : "check_distance_km",

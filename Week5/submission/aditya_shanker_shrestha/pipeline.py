@@ -1,3 +1,4 @@
+import argparse
 import logging
 
 from config import SOURCE_DB_CONFIG, DEST_DB_CONFIG, get_connection, logger
@@ -13,6 +14,7 @@ from extract import (
     get_watermark,
 )
 from transform import transform
+from quality import run_quality_checks
 from load import (
     load_dim_driver,
     load_dim_passenger,
@@ -35,9 +37,11 @@ logging.basicConfig(
 def parse_args():
     parser = argparse.ArgumentParser(description="Rides ETL pipeline")
     parser.add_argument(
-        "--full-reload"
-
+        "--full-reload",
+        action="store_true",
+        help="Re-extract all trips instead of incremental from the watermark"
     )
+    return parser.parse_args()
 
 
 def load_dimensions(src_conn, dst_conn):
@@ -62,9 +66,15 @@ def load_facts(src_conn, dst_conn, mode):
         logger.info(f"Trips rows loaded in {time()-time0:.2f}s")
     else:
         rows =extract_trips_full(src_conn)
+    if not rows:
+        logger.info("No new trips since watermark — nothing to transform or load")
+        return
     time0=time()
     fact_rows = transform(rows, lookups)
     logger.info(f"Trips rows transformed in {time()-time0:.2f}s")
+    time0=time()
+    run_quality_checks(fact_rows)
+    logger.info(f"Quality checks passed in {time()-time0:.2f}s")
     load_fact_trips(dst_conn, fact_rows)
 
 
@@ -72,9 +82,10 @@ def load_facts(src_conn, dst_conn, mode):
 
 def main():
     """Run the full ETL: dimensions first, then the incremental fact load."""
-    mode = 'Incremental'
-  
-    src_conn = get_connection(SOURCE_DB_CONFIG) 
+    args = parse_args()
+    mode = 'FULL' if args.full_reload else 'Incremental'
+
+    src_conn = get_connection(SOURCE_DB_CONFIG)
     dst_conn = get_connection(DEST_DB_CONFIG)
     logger.info("ETL started")
 
@@ -84,7 +95,7 @@ def main():
         logger.info(f"Dimensions loaded in {time()-time0:.2f} seconds")
        
         time0=time()
-        load_facts(src_conn, dst_conn)
+        load_facts(src_conn, dst_conn, mode)
         logger.info(f"Fact trips loaded in {time()-time0:.2f} seconds")
       
         logger.info("ETL completed successfully")

@@ -1,0 +1,41 @@
+2026-07-18 07:37:25,064  INFO  ETL started
+2026-07-18 07:37:25,068  INFO  Extracted 25 from the table
+2026-07-18 07:37:25,075  INFO  0 inserted to dim_driver
+2026-07-18 07:37:25,082  INFO  Extracted 45 from the table
+2026-07-18 07:37:25,090  INFO  0 inserted to dim_passenger
+2026-07-18 07:37:25,092  INFO  Extracted 25 from the table
+2026-07-18 07:37:25,098  INFO  0 inserted to dim_location
+2026-07-18 07:37:25,099  INFO  Extracted 7 from the table
+2026-07-18 07:37:25,100  INFO  0 inserted to dim_payment_method
+2026-07-18 07:37:25,101  INFO  Extracted 10 from the table
+2026-07-18 07:37:25,103  INFO  0 inserted to dim_promo_code
+2026-07-18 07:37:25,104  INFO  Extracted 30 from the table
+2026-07-18 07:37:25,110  INFO  0 inserted to dim_vehicle
+2026-07-18 07:37:25,111  INFO  Dimensions loaded in 0.05 seconds
+2026-07-18 07:37:25,111  INFO  Loading lookup table into memmory
+2026-07-18 07:37:25,115  INFO  Lookup loaded in 0.00s
+2026-07-18 07:37:25,119  INFO  Watermark: 2026-07-12 06:30:00
+2026-07-18 07:37:25,122  INFO  Extracted 1 from the table
+2026-07-18 07:37:25,122  INFO  Trips rows loaded in 0.00s
+2026-07-18 07:37:25,123  INFO  Transformed 1 rows, skipped 0
+2026-07-18 07:37:25,123  INFO  Trips rows transformed in 0.00s
+2026-07-18 07:37:25,123  INFO  Data quality check passed: check_rows_count - Found 1 rows
+2026-07-18 07:37:25,123  INFO  Data quality check passed: check_no_negative_fares - No rows with negative fares found
+2026-07-18 07:37:25,123  INFO  Data quality check passed: check_required_keys_not_null - No rows with null values in required keys: ['source_trip_id', 'date_key', 'driver_key', 'passenger_key', 'pickup_location_key', 'dropoff_location_key', 'tip_amount', 'discount_amount', 'trip_count', 'requested_at', 'time_key']
+2026-07-18 07:37:25,123  INFO  Data quality check passed: unique_source_trip_id - All source_trip_id values are unique
+2026-07-18 07:37:25,123  INFO  Data quality check passed: check_surge_multiplier - No rows with negative surge_multiplier values found
+2026-07-18 07:37:25,123  INFO  Data quality check passed: check_distance_km - No rows with negative distance_km values found
+2026-07-18 07:37:25,123  INFO  Data quality check passed: check_tip_amount_discount_amount - No rows with negative tip_amount or discount_amount values found
+2026-07-18 07:37:25,123  INFO  Data quality check passed: check_fare_amount_recalculation - All fare_amount values are correctly calculated
+2026-07-18 07:37:25,123  INFO  Data quality check passed: check_duration_minutes_calculation - All duration_minutes values are correctly calculated
+2026-07-18 07:37:25,123  ERROR  Data quality check failed: check_duration_completed_trips - Found 1 completed trips with null completed_at or duration_minutes values
+Traceback (most recent call last):
+  File "/Users/nepal/DE-C/Week5/submission/aditya_shanker_shrestha/pipeline.py", line 108, in <module>
+    main()
+  File "/Users/nepal/DE-C/Week5/submission/aditya_shanker_shrestha/pipeline.py", line 98, in main
+    load_facts(src_conn, dst_conn, mode)
+  File "/Users/nepal/DE-C/Week5/submission/aditya_shanker_shrestha/pipeline.py", line 76, in load_facts
+    run_quality_checks(fact_rows)
+  File "/Users/nepal/DE-C/Week5/submission/aditya_shanker_shrestha/quality.py", line 135, in run_quality_checks
+    raise DataQualityError(f"Data quality check failed: {result['check_identifier']} - {result['details']}")
+quality.DataQualityError: Data quality check failed: check_duration_completed_trips - Found 1 completed trips with null completed_at or duration_minutes values

@@ -1,0 +1,35 @@
+2026-07-18 07:37:03,322  INFO  ETL started
+2026-07-18 07:37:03,328  INFO  Extracted 25 from the table
+2026-07-18 07:37:03,340  INFO  0 inserted to dim_driver
+2026-07-18 07:37:03,350  INFO  Extracted 45 from the table
+2026-07-18 07:37:03,362  INFO  0 inserted to dim_passenger
+2026-07-18 07:37:03,365  INFO  Extracted 25 from the table
+2026-07-18 07:37:03,371  INFO  0 inserted to dim_location
+2026-07-18 07:37:03,372  INFO  Extracted 7 from the table
+2026-07-18 07:37:03,375  INFO  0 inserted to dim_payment_method
+2026-07-18 07:37:03,376  INFO  Extracted 10 from the table
+2026-07-18 07:37:03,379  INFO  0 inserted to dim_promo_code
+2026-07-18 07:37:03,381  INFO  Extracted 30 from the table
+2026-07-18 07:37:03,390  INFO  0 inserted to dim_vehicle
+2026-07-18 07:37:03,391  INFO  Dimensions loaded in 0.07 seconds
+2026-07-18 07:37:03,391  INFO  Loading lookup table into memmory
+2026-07-18 07:37:03,397  INFO  Lookup loaded in 0.01s
+2026-07-18 07:37:03,404  INFO  Watermark: 2026-06-29 21:53:01
+2026-07-18 07:37:03,412  INFO  Extracted 30 from the table
+2026-07-18 07:37:03,412  INFO  Trips rows loaded in 0.01s
+2026-07-18 07:37:03,413  INFO  Transformed 30 rows, skipped 0
+2026-07-18 07:37:03,413  INFO  Trips rows transformed in 0.00s
+2026-07-18 07:37:03,413  INFO  Data quality check passed: check_rows_count - Found 30 rows
+2026-07-18 07:37:03,413  INFO  Data quality check passed: check_no_negative_fares - No rows with negative fares found
+2026-07-18 07:37:03,413  INFO  Data quality check passed: check_required_keys_not_null - No rows with null values in required keys: ['source_trip_id', 'date_key', 'driver_key', 'passenger_key', 'pickup_location_key', 'dropoff_location_key', 'tip_amount', 'discount_amount', 'trip_count', 'requested_at', 'time_key']
+2026-07-18 07:37:03,413  INFO  Data quality check passed: unique_source_trip_id - All source_trip_id values are unique
+2026-07-18 07:37:03,413  INFO  Data quality check passed: check_surge_multiplier - No rows with negative surge_multiplier values found
+2026-07-18 07:37:03,413  INFO  Data quality check passed: check_distance_km - No rows with negative distance_km values found
+2026-07-18 07:37:03,413  INFO  Data quality check passed: check_tip_amount_discount_amount - No rows with negative tip_amount or discount_amount values found
+2026-07-18 07:37:03,413  INFO  Data quality check passed: check_fare_amount_recalculation - All fare_amount values are correctly calculated
+2026-07-18 07:37:03,413  INFO  Data quality check passed: check_duration_minutes_calculation - All duration_minutes values are correctly calculated
+2026-07-18 07:37:03,413  INFO  Data quality check passed: check_duration_completed_trips - All completed trips have non-null completed_at and duration_minutes values
+2026-07-18 07:37:03,413  INFO  Quality checks passed in 0.00s
+2026-07-18 07:37:03,444  INFO  30 inserted to fact_trips
+2026-07-18 07:37:03,446  INFO  Fact trips loaded in 0.06 seconds
+2026-07-18 07:37:03,446  INFO  ETL completed successfully
